@@ -129,6 +129,7 @@ while True:
         num_list.clear()
         for i in filtered:
             num_list.append(i)
+        print(len(num_list))
 
         filtered.clear()
     # filtering ended
