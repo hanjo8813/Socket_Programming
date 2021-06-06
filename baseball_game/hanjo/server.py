@@ -97,6 +97,13 @@ while True :
                 if temp_strike == server_strike and temp_ball == server_ball:
                     temp_list.append(candidate)
             server_candidate = temp_list
+
+        # If server sends results erroneously
+        if not server_candidate:
+            print('Wrong player!')
+            break
+            
+        # Choose one randomly among the candidates  
         server_guess = server_candidate[random.randrange(0, len(server_candidate))]
 
         # send server guess & client result

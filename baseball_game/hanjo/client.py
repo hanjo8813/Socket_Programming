@@ -40,6 +40,14 @@ except :
     print('Server is not open.')
     quit()
 
+# init global variables
+number = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+client_candidate = list(map(''.join, permutations(number, 4)))
+client_answer = client_candidate[random.randrange(0, len(client_candidate))]
+client_guess = client_candidate[random.randrange(0, len(client_candidate))]
+server_strike = 0
+server_ball = 0
+
 # request start game
 confirm = input('Do you want a number baseball game? (Yes or No) : ')
 if confirm == 'Yes':
@@ -50,14 +58,6 @@ if confirm == 'Yes':
     clientSocket.send(request_msg.encode())
 else :
     quit()
-
-# init global variables
-number = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-client_candidate = list(map(''.join, permutations(number, 4)))
-client_answer = client_candidate[random.randrange(0, len(client_candidate))]
-client_guess = client_candidate[random.randrange(0, len(client_candidate))]
-server_strike = 0
-server_ball = 0
 
 while True :
     # parsing message to header & body
@@ -81,7 +81,7 @@ while True :
         client_ball = msg_body[17]
         
         # parsing error
-        if server_guess != '0000' and len(set(server_guess)) != 4:
+        if len(set(server_guess)) != 4:
             print('Wrong guess (same digits)')
             quit()
         
@@ -92,12 +92,12 @@ while True :
         if server_strike == '4' or client_strike =='4':
             if server_strike != '4' and client_strike == '4':
                 print('Client Win!')
-            if server_strike == '4' and client_strike != '4':
+            elif server_strike == '4' and client_strike != '4':
                 print('Client Lose!')
                 client_guess = '0000'
                 server_strike = 4
                 server_ball = 0
-            if server_strike == '4' and client_strike == '4':
+            elif server_strike == '4' and client_strike == '4':
                 print('Draw')
             send_MC_msg(client_guess, server_strike, server_ball)
             break
@@ -109,6 +109,13 @@ while True :
             if temp_strike == client_strike and temp_ball == client_ball:
                 temp_list.append(candidate)
         client_candidate = temp_list
+
+        # If server sends results erroneously
+        if not client_candidate:
+            print('Wrong player!')
+            break
+        
+        # Choose one randomly among the candidates  
         client_guess = client_candidate[random.randrange(0, len(client_candidate))]
         
         # send client guess & server result
